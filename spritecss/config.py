@@ -3,6 +3,10 @@ from os import path
 from itertools import imap, ifilter
 from urlparse import urljoin
 from .css import CSSParser, iter_events
+import time
+
+millis = int(round(time.time() * 1000))
+tstr = str(millis)
 
 def parse_config_stmt(line, prefix="spritemapper."):
     line = line.strip()
@@ -64,7 +68,7 @@ class CSSConfig(object):
     @property
     def output_image(self):
         if "output_image" in self._data:
-            return self.normpath(self._data["output_image"])
+            return self.normpath(self._data["output_image"].replace('{time}', tstr))
 
     @property
     def is_mapping_recursive(self):
@@ -73,7 +77,7 @@ class CSSConfig(object):
             raise RuntimeError("cannot have recursive spritemapping "
                                "when output_image is set")
         elif rv is None:
-            return not self._data.get("output_image")
+            return not self._data.get("output_image").replace('{time}', tstr)
         else:
             return bool(rv)
 
